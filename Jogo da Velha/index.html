@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            border: 2px solid black;
+            cursor: pointer;
+        }
+        .cell.taken {
+            cursor: not-allowed;
+        }
+        #reset {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jogo da Velha</h1>
+    <div class="board" id="board"></div>
+    <button id="reset">Reiniciar</button>
+    <p id="message"></p>
+    
+    <script>
+        const board = document.getElementById("board");
+        const resetButton = document.getElementById("reset");
+        const message = document.getElementById("message");
+        let currentPlayer = "X";
+        let gameBoard = ["", "", "", "", "", "", "", "", ""];
+        
+        function checkWinner() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            for (let combo of winningCombinations) {
+                const [a, b, c] = combo;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    message.textContent = `Jogador ${gameBoard[a]} venceu!`;
+                    return true;
+                }
+            }
+            if (!gameBoard.includes("")) {
+                message.textContent = "Empate!";
+                return true;
+            }
+            return false;
+        }
+        
+        function handleClick(index, cell) {
+            if (gameBoard[index] === "" && !message.textContent) {
+                gameBoard[index] = currentPlayer;
+                cell.textContent = currentPlayer;
+                cell.classList.add("taken");
+                if (!checkWinner()) {
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+                }
+            }
+        }
+        
+        function resetGame() {
+            gameBoard = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "X";
+            message.textContent = "";
+            board.innerHTML = "";
+            createBoard();
+        }
+        
+        function createBoard() {
+            gameBoard.forEach((_, index) => {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.addEventListener("click", () => handleClick(index, cell));
+                board.appendChild(cell);
+            });
+        }
+        
+        createBoard();
+        resetButton.addEventListener("click", resetGame);
+    </script>
+
+    <!-- O link para o script externo deve ser colocado aqui -->
+    <script src="script.js"></script>
+</body>
+</html>
